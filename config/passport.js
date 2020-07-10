@@ -3,7 +3,10 @@ const User =  require('../models/users');
 const config = require('../config/database');
 const bcrypt = require('bcryptjs');
 const flash = require('connect-flash');
-const FortyTwoStrategy = require('passport-42').Strategy;
+var GitHubStrategy = require('passport-github').Strategy;
+var FortyTwoStrategy = require('passport-42').Strategy;
+
+
 
 module.exports = function(passport){
     // local user authentiofication
@@ -29,48 +32,6 @@ module.exports = function(passport){
             });
         });
     }));
-
-
-	passport.use(new FortyTwoStrategy({
-        clientID: "insert uid",
-        clientSecret: "insert client secret",
-        callbackURL: "http://localhost:3000/auth/42/callback",
-        passReqToCallback: true
-    },
-    function (accessToken, refreshToken, profile, cb) {
-        var info = profile._json;
-        console.log(profile); //I think profile is either the ACCESS_TOKEN needed to get the user info
-                              // or the code needed to get ACCESS_TOKEN
-
-        // if (!info.email) {
-        //     req.flash('error', '42 email not found');
-        //     return done(null, false)
-        // }
-
-        console.log("MADE IT TO LOG IN");
-        // let newUser = new User();
-        // newUser.firstname = info.first_name;
-        // newUser.lastname = info.last_name;
-        // newUser.username = info.user_name;
-        // newUser.email = info.email;
-        // newUser.password = info.login + info.id + '_42';
-
-
-        // bcrypt.genSalt(10, function(err, salt){
-        //     bcrypt.hash(newUser.password, salt, function(err, hash){
-        //         if (err) throw err;
-        //         newUser.password = hash;
-        //         newUser.save(function(err){
-        //             if (err) throw err;
-        //             else{
-        //                 req.flash('success', "User registered");
-        //                 return done(null, newUser);
-        //             }
-        //         });
-        //     });
-        // });
-    }
-));
 
     passport.use('local-signup', new LocalStrategy({usernameField : 'username',passwordField : 'email', passReqToCallback: true}, function(req, username, email, done, res){
         let query = {username:username};
@@ -111,6 +72,80 @@ module.exports = function(passport){
             }
         });
     }));
+
+    passport.use(new GitHubStrategy({
+        clientID: GITHUB_CLIENT_ID,
+        clientSecret: GITHUB_CLIENT_SECRET,
+        callbackURL: "http://localhost:3000/user/auth/github/callback"
+      },
+      function(accessToken, refreshToken, profile, done) {
+        var result = profile._json;
+
+        let query = {username:result.login};
+
+        console.log(result.login);
+
+        User.findOne(query, function(err, user){
+            if (err)
+            {
+                console.log('Error trying to find user');
+                return done(err);
+            }
+            if(!user){
+                let newUser = new User();
+                newUser.username = result.login;
+                newUser.password = profile.id;
+
+                newUser.save(function(err){
+                    if (err) throw err;
+                    else{
+                        console.log("User successfully registered");
+                        return done(null, newUser);
+                    }
+                });
+            }
+            else{
+                return done(null, user);
+            }
+        });
+      }
+    ));
+
+    passport.use(new FortyTwoStrategy({
+        clientID: FORTYTWO_APP_ID,
+        clientSecret: FORTYTWO_APP_SECRET,
+        callbackURL: "http://localhost:3000/user/auth/42/callback"
+      },
+      function(accessToken, refreshToken, profile, done) {
+        let query = {username:profile.username};
+        User.findOne(query, function(err, user){
+            if (err)
+            {
+                console.log('Error trying to find user');
+                return done(err);
+            }
+            if(!user){
+                let newUser = new User();
+                newUser.username = profile.username
+                newUser.firstname = profile.name.givenName;
+                newUser.lastname = profile.name.familyName;
+                newUser.password = profile.id;
+
+                newUser.save(function(err){
+                    if (err) throw err;
+                    else{
+                        console.log("User successfully registered");
+                        return done(null, newUser);
+                    }
+                });
+            }
+            else{
+                return done(null, user);
+            }
+        });
+      }
+    ));
+
     passport.serializeUser(function(user, done){
         done(null, user.id);
     });

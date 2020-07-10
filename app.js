@@ -77,14 +77,7 @@ db.on('error', function(err){
     console.log(err);
 });
 
-app.get('/auth/42/callback',
-    passport.authenticate('42', {
-        failureRedirect: '/user/login'
-    }),
 
-    function(req, res) {
-        res.redirect('/home');
-    });
 
 app.get('/', function(req, res, next){
     res.redirect('/home');
