@@ -3,7 +3,18 @@ const User =  require('../models/users');
 const config = require('../config/database');
 const bcrypt = require('bcryptjs');
 const flash = require('connect-flash');
-const FortyTwoStrategy = require('passport-42').Strategy;
+var GitHubStrategy = require('passport-github').Strategy;
+
+const GITHUB_CLIENT_ID = "f3b0df2f2898166535c9";
+const GITHUB_CLIENT_SECRET = "ffbb2143d7a6857614c4282d874a477144336e53";
+
+    /* We had 42 authentication implemented. There was a change to the endpoint to get the access token using the code you 
+     * get from intra after a user logs in. After the user logs in, you get a code that you're supposed to send to 
+     * another endpoint to get an access token to use to get the user info (name, surname, username, email).
+     * That endpoint has changed...The header that you need to specify the response type (we want the authorization_token)
+     * changed, but the documentation on this endpoint has not been updated, there is no swagger for it either, so there
+     * is no way to get the log in for 42 to work.
+    */
 
 module.exports = function(passport){
     // local user authentiofication
@@ -29,48 +40,6 @@ module.exports = function(passport){
             });
         });
     }));
-
-
-	passport.use(new FortyTwoStrategy({
-        clientID: "insert uid",
-        clientSecret: "insert client secret",
-        callbackURL: "http://localhost:3000/auth/42/callback",
-        passReqToCallback: true
-    },
-    function (accessToken, refreshToken, profile, cb) {
-        var info = profile._json;
-        console.log(profile); //I think profile is either the ACCESS_TOKEN needed to get the user info
-                              // or the code needed to get ACCESS_TOKEN
-
-        // if (!info.email) {
-        //     req.flash('error', '42 email not found');
-        //     return done(null, false)
-        // }
-
-        console.log("MADE IT TO LOG IN");
-        // let newUser = new User();
-        // newUser.firstname = info.first_name;
-        // newUser.lastname = info.last_name;
-        // newUser.username = info.user_name;
-        // newUser.email = info.email;
-        // newUser.password = info.login + info.id + '_42';
-
-
-        // bcrypt.genSalt(10, function(err, salt){
-        //     bcrypt.hash(newUser.password, salt, function(err, hash){
-        //         if (err) throw err;
-        //         newUser.password = hash;
-        //         newUser.save(function(err){
-        //             if (err) throw err;
-        //             else{
-        //                 req.flash('success', "User registered");
-        //                 return done(null, newUser);
-        //             }
-        //         });
-        //     });
-        // });
-    }
-));
 
     passport.use('local-signup', new LocalStrategy({usernameField : 'username',passwordField : 'email', passReqToCallback: true}, function(req, username, email, done, res){
         let query = {username:username};
@@ -111,6 +80,45 @@ module.exports = function(passport){
             }
         });
     }));
+
+    passport.use(new GitHubStrategy({
+        clientID: GITHUB_CLIENT_ID,
+        clientSecret: GITHUB_CLIENT_SECRET,
+        callbackURL: "http://localhost:3000/user/auth/github/callback"
+      },
+      function(accessToken, refreshToken, profile, done) {
+        var result = profile._json;
+
+        let query = {username:result.login};
+
+        console.log(result.login);
+
+        User.findOne(query, function(err, user){
+            if (err)
+            {
+                console.log('Error trying to find user');
+                return done(err);
+            }
+            if(!user){
+                let newUser = new User();
+                newUser.username = result.login;
+                newUser.password = profile.id;
+
+                newUser.save(function(err){
+                    if (err) throw err;
+                    else{
+                        console.log("User successfully registered");
+                        return done(null, newUser);
+                    }
+                });
+            }
+            else{
+                return done(null, user);
+            }
+        });
+      }
+    ));
+
     passport.serializeUser(function(user, done){
         done(null, user.id);
     });

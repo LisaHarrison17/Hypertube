@@ -74,8 +74,14 @@ router.get('/logout', function(req, res, next){
     next();
 });
 
-router.get('/auth/42',
-    passport.authenticate('42'));
+router.get('/auth/github',
+  passport.authenticate('github'));
+
+router.get('/auth/github/callback', 
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  function(req, res) {
+    res.redirect('/');
+  });
 
 
 module.exports = router;
