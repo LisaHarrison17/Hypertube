@@ -83,5 +83,13 @@ router.get('/auth/github/callback',
     res.redirect('/');
   });
 
+router.get('/auth/42',
+  passport.authenticate('42'));
+
+router.get('/auth/42/callback', 
+  passport.authenticate('42', { failureRedirect: '/login' }),
+  function(req, res) {
+    res.redirect('/');
+  });
 
 module.exports = router;

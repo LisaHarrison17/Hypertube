@@ -4,17 +4,9 @@ const config = require('../config/database');
 const bcrypt = require('bcryptjs');
 const flash = require('connect-flash');
 var GitHubStrategy = require('passport-github').Strategy;
+var FortyTwoStrategy = require('passport-42').Strategy;
 
-const GITHUB_CLIENT_ID = "f3b0df2f2898166535c9";
-const GITHUB_CLIENT_SECRET = "ffbb2143d7a6857614c4282d874a477144336e53";
 
-    /* We had 42 authentication implemented. There was a change to the endpoint to get the access token using the code you 
-     * get from intra after a user logs in. After the user logs in, you get a code that you're supposed to send to 
-     * another endpoint to get an access token to use to get the user info (name, surname, username, email).
-     * That endpoint has changed...The header that you need to specify the response type (we want the authorization_token)
-     * changed, but the documentation on this endpoint has not been updated, there is no swagger for it either, so there
-     * is no way to get the log in for 42 to work.
-    */
 
 module.exports = function(passport){
     // local user authentiofication
@@ -102,6 +94,41 @@ module.exports = function(passport){
             if(!user){
                 let newUser = new User();
                 newUser.username = result.login;
+                newUser.password = profile.id;
+
+                newUser.save(function(err){
+                    if (err) throw err;
+                    else{
+                        console.log("User successfully registered");
+                        return done(null, newUser);
+                    }
+                });
+            }
+            else{
+                return done(null, user);
+            }
+        });
+      }
+    ));
+
+    passport.use(new FortyTwoStrategy({
+        clientID: FORTYTWO_APP_ID,
+        clientSecret: FORTYTWO_APP_SECRET,
+        callbackURL: "http://localhost:3000/user/auth/42/callback"
+      },
+      function(accessToken, refreshToken, profile, done) {
+        let query = {username:profile.username};
+        User.findOne(query, function(err, user){
+            if (err)
+            {
+                console.log('Error trying to find user');
+                return done(err);
+            }
+            if(!user){
+                let newUser = new User();
+                newUser.username = profile.username
+                newUser.firstname = profile.name.givenName;
+                newUser.lastname = profile.name.familyName;
                 newUser.password = profile.id;
 
                 newUser.save(function(err){
