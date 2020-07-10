@@ -81,7 +81,7 @@ module.exports = function(passport){
       function(accessToken, refreshToken, profile, done) {
         var result = profile._json;
 
-        let query = {username:result.login};
+        let query = {$or : [{username:result.login}, {email:result.email}]};
 
         console.log(result.login);
 

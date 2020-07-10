@@ -80,7 +80,7 @@ router.get('/auth/github',
 router.get('/auth/github/callback', 
   passport.authenticate('github', { failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/');
+    res.redirect('/home');
   });
 
 router.get('/auth/42',
@@ -89,7 +89,7 @@ router.get('/auth/42',
 router.get('/auth/42/callback', 
   passport.authenticate('42', { failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/');
+    res.redirect('/home');
   });
 
 module.exports = router;

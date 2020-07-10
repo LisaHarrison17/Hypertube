@@ -1,4 +1,4 @@
 module.exports = {
-    database: 'mongodb://localhost:27017/hypertube',
+    database: 'mongodb://localhost:27017/test',
     secret: 'secret'
 }
