@@ -1,0 +1,17 @@
+extends layout
+
+block content
+    form(action="/user/login", method="POST")
+        div(class="form-group")
+            label(for="username") Username
+            input(type="text", name="username", id="username", class="form-control", placeholder="Enter your username", required)
+        div(class="form-group")
+            label(for="password") Password
+            input(type="password", name="password", id="password", class="form-control", placeholder="Enter your password", required, minlength="10")
+        input(type="submit", class="btn btn-primary", value="Login")
+        input(type="reset", class="btn btn-default", value="Clear")
+        a(href="#") Forgot Password
+    p Do not have an account? 
+        a(href="/user/signupForm") Sign Up
+    p Have a 42 account? 
+        a(href="/user/auth/42") Login with 42

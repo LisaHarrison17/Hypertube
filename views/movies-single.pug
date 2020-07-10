@@ -1,0 +1,26 @@
+section(class="single-info overlay_container")
+    article(class="movie_cover" style="background: url("+image_url+movie.backdrop_path+")")
+    article(class="movie_info")
+        article
+            h2 #{movie.title}
+            img(src=image_url+movie.poster_path, alt="Movie" width="400px" height="400px")
+            button(type="button" id="playTrailer" class="playTrailer" data-toggle="modal" data-target="#myModal")
+                i(class="fas fa-play")
+                span Watch Trailer
+        article
+            p #{movie.overview}
+
+    div(class="modal fade" id="myModal" role="dialog")
+        div(class="modal-dialog")
+            div(class="modal-content")
+                div(class="modal-header")
+                    button(type="button" class="close" data-dismiss="modal") &times;
+                div(class="modal-body")
+                    iframe(src=trailer, class="trailer" frameborder="2" allowscriptaccess="always" width="500" height="300" allow="autoplay")
+section(class="single more")
+    h1 Similar Movies
+    each movie, i in similarMovies
+        a(class="blocks" href="/movies/display?id="+ movie.id)
+            figure
+                img(src= image_url+movie.poster_path, alt="Movie")
+                figcaption #{movie.title}

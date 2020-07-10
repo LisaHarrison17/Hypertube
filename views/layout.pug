@@ -1,0 +1,44 @@
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(http-equiv="X-UA-Compatible", content="ie=edge")
+        link(rel="stylesheet", href="/bower_components/bootstrap/dist/css/bootstrap.min.css")
+        link(rel="stylesheet", href="https://bootswatch.com/4/lux/bootstrap.min.css")
+        link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css")
+        link(rel="stylesheet", href="/css/style.css")
+        link(rel="stylesheet", href="https://use.fontawesome.com/releases/v5.8.2/css/all.css", integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay", crossorigin="anonymous")
+        link(rel="icon" href="/icon.png")
+        title #{title}
+    body
+        div(class="container")
+            != messages('flashMessages', local)
+            if errors
+                each error, i in errors
+                    div(class="alert alert-danger") #{error.msg}
+            nav(class="navbar navbar-default")
+                div(class="container")
+                    div(class="navbar-header")
+                        a(class="navbar-brand", href="/home") Hypertube
+                        if user
+                            a(href="/home")
+                                button(class='btn btn-default') Home
+                            a(href="/user/logout")
+                                button(class='btn btn-default') Logout
+                        else
+                            a(href="/user/loginForm")
+                                button(class='btn btn-default') Login
+                            a(href="/user/signupForm")
+                                button(class='btn btn-default') Signup
+            if user
+                div(class="form container")
+                    div(class="jumbotron")
+                        h3(class="text-center") Search Movies
+                        form(name="serchForm", method="POST" action="/movies")
+                            input(type="text", class="form-control", name="searchText", placeholder="Search movies")
+            block content
+            hr
+            footer
+            p Copyright &copy; 2019
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js")
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js")

@@ -1,0 +1,12 @@
+extends layout
+
+block content
+    main
+        if movies
+            each movie, i in movies
+                a(class="blocks" href="/movies/display?id="+ movie.id)
+                    figure
+                        img(src= image_url+movie.poster_path, alt="Movie")
+                        figcaption #{movie.title}
+        else if movie
+            include ./movies-single.pug

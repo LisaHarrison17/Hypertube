@@ -1,0 +1,16 @@
+extends layout
+
+block content
+    div(class="form container")
+        div(class="jumbotron")
+            h3(class="text-center") Search Movies
+            form(name="serchForm", method="POST" action="/movies")
+                input(type="text", class="form-control", name="searchText", placeholder="Search movies")
+    div(class="container")
+        div(id="movies", class='row')
+        if movies
+            each movie, i in movies
+                a(class="blocks" href="/movies/display?id="+ movie.id)
+                    figure
+                        img(src=movie.primaryPhoto, alt="Movie")
+                        figcaption #{movie.title}
