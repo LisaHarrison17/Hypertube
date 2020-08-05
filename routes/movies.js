@@ -4,6 +4,7 @@ const movieArt = require('movie-art');
 const router = express.Router();
 const hypertube = require('./hypertube');
 const image_url = "http://image.tmdb.org/t/p/original/";
+const torrentService = require("../services/torrentService");
 
 router.post('/', function(req, res, next) {
     //on movie search display all movies matching query
@@ -20,7 +21,6 @@ router.post('/', function(req, res, next) {
 router.get('/display', function(req, res, next) {
     var id = req.query.id;
     var trailer;
-
     hypertube.getMovie({id: id}, function(movie){
         movieTrailer(movie.data.movie.title).then(function (response, error) {
             if (error) {
@@ -63,6 +63,10 @@ router.get('/display', function(req, res, next) {
             }
         });
     });
+});
+
+router.get("/downloadMovie", function(req, res, next){
+    torrentService.getMovie(req, res, next);
 });
 
 module.exports = router;
