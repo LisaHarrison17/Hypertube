@@ -11,7 +11,7 @@ router.post('/', function(req, res, next) {
     hypertube.searchMovies({query: req.body.searchText} , function(movies) {
         res.render("display_movies", {
             title:'Hypertube | Movies',
-            movies: movies.results,
+            movies: movies.data.movies,
             image_url: image_url
         });
     });
