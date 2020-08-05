@@ -14,7 +14,7 @@ section(class="single more")
         button(type="button" id="playTrailer" class="playTrailer" data-toggle="modal" data-target="#trailerModal")
             i(class="fas fa-play")
             span Watch Trailer
-        button(type="button" id="playMovie" class="playTrailer" data-toggle="modal" data-target="#movieModal" href="/movies/downloadMovie?id="+ movie.data.movie.id)
+        button(type="button" id="playMovie" class="playTrailer" data-toggle="modal" data-target="#movieModal")
             i(class="fas fa-play")
             span Download
 
@@ -32,7 +32,8 @@ section(class="single more")
                 div(class="modal-header")
                     button(type="button" class="close" data-dismiss="modal") &times;
                 div(class="modal-body")
-                    iframe(src=trailer, class="trailer" frameborder="2" allowscriptaccess="always" width="500" height="300" allow="autoplay")
+                    video(width='1920', height='1080', autoplay='')
+                        source(src="/movies/downloadMovie?id="+ movie.data.movie.id, type='video/mp4')
                     
 section(class="single more")
     h1 Similar Movies

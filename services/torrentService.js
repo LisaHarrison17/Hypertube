@@ -3,19 +3,17 @@ var Request = require('request');
 var torrentStream = require('torrent-stream');
 var fs = require('fs');
 
-
 exports.getMovie = function (req, res) {
 	createFolders();
-	// checkMovieExpiration();
-	// if (req.params.mid) {
+	if (req.query.id) {
 		var torrents;
 		var magnet = "magnet:?xt=urn:btih:"
 
 		var options = {
 			method: 'GET',
-			url: 'https://yts.ag/api/v2/movie_details.json?movie_id=' + 1608//req.params.mid
+			url: 'https://yts.ag/api/v2/movie_details.json?movie_id=' + req.query.id
 		};
-		
+
 		Request(options, function (err, response, body) {
 			var movie = JSON.parse(body);
 			torrents = movie.data.movie.torrents;
@@ -49,19 +47,18 @@ exports.getMovie = function (req, res) {
 				engine.files.forEach(function (file) {
                     const fileSize = file.length;
 					const end = fileSize - 1;
-					console.log("End: " + end);
 					console.log("Filesize: " + fileSize);
 
 					var extension = path.extname(file.path)
 					if (extension === '.mp4' || extension === '.mkv' || extension === '.avi') {
-						var stream = file.createReadStream();
+						var stream = file.createReadStream(0, end);
                         console.log('filename:', file.name);
-                        // stream.pipe(res);
+                        stream.pipe(res);
 					}
 				});
 			});
 		});
-	// }
+	}
 }
 
 function createFolders() {
