@@ -73,6 +73,8 @@
     font-weight: 600;
     color: #FBC403;
     font-size: 14px;
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 figcaption:hover  {

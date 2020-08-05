@@ -1,9 +1,13 @@
+section(class="single")
+    h2 #{movie.data.movie.title}
+
 section(class="single-info overlay_container")
-    article(class="movie_cover" style="background: url("+image_url+movie.backdrop_path+")")
     article(class="movie_info")
         article
-            h2 #{movie.title}
-            img(src=image_url+movie.poster_path, alt="Movie" width="400px" height="400px")
+            img(src=movie.data.movie.medium_cover_image, alt="Movie")
+        article
+            p Rating #{movie.data.movie.rating}
+            p #{movie.data.movie.description_full}
 
 section(class="single more")
     article
@@ -13,8 +17,6 @@ section(class="single more")
         button(type="button" id="playMovie" class="playTrailer" data-toggle="modal" data-target="#movieModal")
             i(class="fas fa-play")
             span Download
-    article
-        p #{movie.overview}
 
     div(class="modal fade" id="trailerModal" role="dialog")
         div(class="modal-dialog")
@@ -37,5 +39,5 @@ section(class="single more")
     each movie, i in similarMovies
         a(class="blocks" href="/movies/display?id="+ movie.id)
             figure
-                img(src= image_url+movie.poster_path, alt="Movie")
+                img(src=movie.medium_cover_image, alt="Movie")
                 figcaption #{movie.title}

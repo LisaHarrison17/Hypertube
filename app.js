@@ -89,8 +89,7 @@ app.get('/home', function(req, res, next){
         hypertube.discoverMovies(function(movies) {
             res.render("display_movies", {
                 title:'Hypertube | Movies',
-                movies: movies.results,
-                image_url: image_url
+                movies: movies.data.movies,
             });
         });
     }

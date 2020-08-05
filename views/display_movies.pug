@@ -6,7 +6,7 @@ block content
             each movie, i in movies
                 a(class="blocks" href="/movies/display?id="+ movie.id)
                     figure
-                        img(src= image_url+movie.poster_path, alt="Movie")
-                        figcaption #{movie.title}
+                        img(src=movie.medium_cover_image)
+                        figcaption #{movie.title_long}
         else if movie
             include ./movies-single.pug
